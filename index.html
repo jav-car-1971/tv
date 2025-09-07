@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Retro de YouTube</title>
+    <style>
+        body {
+            background-color: #2c3e50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            color: #ecf0f1;
+        }
+
+        .tv-container {
+            width: 700px;
+            height: 500px;
+            background-color: #34495e;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .tv-screen-border {
+            width: 90%;
+            height: 70%;
+            background-color: #2b2d30;
+            border: 8px solid #1a1b1e;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tv-screen-border iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .tv-controls {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 90%;
+        }
+
+        .tv-controls input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #555;
+            border-radius: 6px;
+            background-color: #ecf0f1;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .tv-controls button {
+            padding: 10px;
+            border: none;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .tv-controls button:hover {
+            background-color: #c0392b;
+        }
+
+        /* Estilos decorativos del televisor */
+        .tv-antenna {
+            position: absolute;
+            top: -20px;
+            width: 15px;
+            height: 30px;
+            background-color: #95a5a6;
+            transform: rotate(-15deg);
+            border-radius: 5px;
+            left: 10%;
+            box-shadow: inset 0 2px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .tv-antenna::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -50px;
+            width: 15px;
+            height: 30px;
+            background-color: #95a5a6;
+            transform: rotate(30deg);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="tv-container">
+        <div class="tv-antenna"></div>
+        <div class="tv-screen-border">
+            <iframe id="youtube-player" src="http://googleusercontent.com/youtube.com/embed/dQw4w9WgXcQ?autoplay=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <div class="tv-controls">
+            <input type="text" id="youtube-url" placeholder="Pega un enlace de YouTube aquí (ej: https://www.youtube.com/watch?v=dQw4w9WgXcQ o https://youtu.be/dQw4w9WgXcQ)">
+            <button id="load-button">Sintonizar</button>
+        </div>
+    </div>
+
+    <script>
+        const urlInput = document.getElementById('youtube-url');
+        const loadButton = document.getElementById('load-button');
+        const player = document.getElementById('youtube-player');
+
+        loadButton.addEventListener('click', () => {
+            const url = urlInput.value;
+            if (url) {
+                const videoId = extractVideoId(url);
+                if (videoId) {
+                    // La URL de incrustación correcta de YouTube
+                    const embedUrl = `http://googleusercontent.com/youtube.com/embed/${videoId}?autoplay=1`;
+                    player.src = embedUrl;
+                } else {
+                    alert("Por favor, ingresa un enlace de YouTube válido.");
+                }
+            } else {
+                alert("El campo del enlace no puede estar vacío.");
+            }
+        });
+
+        function extractVideoId(url) {
+            let videoId = null;
+            // Expresión regular mejorada para capturar IDs de varios formatos de YouTube
+            const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            const match = url.match(regex);
+            if (match && match[1]) {
+                videoId = match[1];
+            }
+            return videoId;
+        }
+    </script>
+</body>
+</html>
