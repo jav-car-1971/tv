@@ -168,7 +168,6 @@
         const videoListUl = document.getElementById('video-list');
 
         function loadVideo(videoId) {
-            // Se usa HTTPS para evitar problemas de seguridad con el navegador
             const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
             player.src = embedUrl;
         }
@@ -190,4 +189,3 @@
     </script>
 </body>
 </html>
-   
