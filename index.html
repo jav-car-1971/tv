@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TV Retro de YouTube</title>
+    <title>TV Retro - Mis Canales Educativos</title>
     <style>
         body {
             background-color: #2c3e50;
@@ -53,31 +53,49 @@
             flex-direction: column;
             gap: 10px;
             width: 90%;
+            text-align: center;
         }
 
-        .tv-controls input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #555;
-            border-radius: 6px;
-            background-color: #ecf0f1;
-            color: #333;
-            font-size: 14px;
+        .tv-controls h3 {
+            margin: 0;
         }
 
-        .tv-controls button {
-            padding: 10px;
+        .video-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            max-height: 100px;
+            overflow-y: auto;
+            border: 1px solid #444;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        
+        .video-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .video-list::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 4px;
+        }
+
+        .video-list li button {
+            padding: 8px 15px;
             border: none;
             background-color: #e74c3c;
             color: white;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             transition: background-color 0.3s;
         }
 
-        .tv-controls button:hover {
+        .video-list li button:hover {
             background-color: #c0392b;
         }
 
@@ -112,70 +130,61 @@
     <div class="tv-container">
         <div class="tv-antenna"></div>
         <div class="tv-screen-border">
-            <div id="youtube-player"></div>
+            <iframe id="youtube-player" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
 
         <div class="tv-controls">
-            <input type="text" id="youtube-url" placeholder="Pega un enlace de YouTube aquí">
-            <button id="load-button" disabled>Sintonizar</button>
+            <h3>Mis Canales Educativos</h3>
+            <ul id="video-list" class="video-list">
+                </ul>
         </div>
     </div>
 
     <script>
-        const urlInput = document.getElementById('youtube-url');
-        const loadButton = document.getElementById('load-button');
-        
-        let ytPlayer;
+        const myFavoriteVideos = [
+            { title: "MIT - Intro to Computer Science", id: "5yM3yA1sU7E" },
+            { title: "Harvard CS50 - Lecture 1", id: "y6rO94S8-zM" },
+            { title: "MIT - The AI Revolution", id: "aIuB0aN1X-0" },
+            { title: "The Future of Programming", id: "P2J_R6o8yU0" },
+            { title: "Documental: The Story of CSS", id: "yWnL583X0lQ" },
+            { title: "La historia de internet", id: "w_iI3bE3b2Y" },
+            { title: "Cómo funciona el cerebro", id: "t0w6n_p0e3Q" },
+            { title: "Deep Learning Explained", id: "aircAruvnKk" },
+            { title: "The Power of a Growth Mindset", id: "75a3Uf82F7E" },
+            { title: "Charla TED: Data is the new oil", id: "fE7P8d65UGA" },
+            { title: "Diseño de videojuegos", id: "oP4s0y9D36U" },
+            { title: "Introducción a la Inteligencia Artificial", id: "Jc2yX_YtS4Y" },
+            { title: "Cómo aprender cualquier cosa", id: "y-8l6l3jKGE" },
+            { title: "Programación orientada a objetos", id: "H2u16cQy7W0" },
+            { title: "Aprende Python en 10 horas", id: "k-W_gI-Bw3Q" },
+            { title: "Documental: The Great Hack", id: "o-wM2fG8m2g" },
+            { title: "Música de Studio Ghibli", id: "5gq4Jk69M6s" },
+            { title: "Un poco de jazz", id: "neV3Hr4Jt_s" },
+            { title: "Viaje a la Luna", id: "sNGeGjG49S8" },
+            { title: "Historia de la computación", id: "sNGeGjG49S8" }
+        ];
 
-        // Carga la API de YouTube Iframe Player de forma asíncrona
-        const tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        const player = document.getElementById('youtube-player');
+        const videoListUl = document.getElementById('video-list');
 
-        // Esta función se llama automáticamente cuando la API de YouTube está lista
-        function onYouTubeIframeAPIReady() {
-            ytPlayer = new YT.Player('youtube-player', {
-                height: '100%',
-                width: '100%',
-                videoId: 'dQw4w9WgXcQ', // Video por defecto
-                playerVars: {
-                    'controls': 1
-                },
-                events: {
-                    'onReady': onPlayerReady
-                }
-            });
-        }
-        
-        function onPlayerReady(event) {
-            // Habilita el botón una vez que el reproductor está listo
-            loadButton.disabled = false;
-            
-            // Añade el event listener al botón Sintonizar
-            loadButton.addEventListener('click', () => {
-                const url = urlInput.value;
-                if (url) {
-                    const videoId = extractVideoId(url);
-                    if (videoId) {
-                        ytPlayer.loadVideoById(videoId);
-                    } else {
-                        alert("Por favor, ingresa un enlace de YouTube válido.");
-                    }
-                } else {
-                    alert("El campo del enlace no puede estar vacío.");
-                }
-            });
+        function loadVideo(videoId) {
+            const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            player.src = embedUrl;
         }
 
-        function extractVideoId(url) {
-            let videoId = null;
-            const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-            const match = url.match(regex);
-            if (match && match[1]) {
-                videoId = match[1];
-            }
-            return videoId;
+        myFavoriteVideos.forEach(video => {
+            const li = document.createElement('li');
+            const button = document.createElement('button');
+            button.textContent = video.title;
+            button.addEventListener('click', () => {
+                loadVideo(video.id);
+            });
+            li.appendChild(button);
+            videoListUl.appendChild(li);
+        });
+
+        if (myFavoriteVideos.length > 0) {
+            loadVideo(myFavoriteVideos[0].id);
         }
     </script>
 </body>
