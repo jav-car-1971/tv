@@ -112,11 +112,11 @@
     <div class="tv-container">
         <div class="tv-antenna"></div>
         <div class="tv-screen-border">
-            <iframe id="youtube-player" src="http://googleusercontent.com/youtube.com/embed/dQw4w9WgXcQ?autoplay=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <iframe id="youtube-player" src="about:blank" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
 
         <div class="tv-controls">
-            <input type="text" id="youtube-url" placeholder="Pega un enlace de YouTube aquí (ej: https://www.youtube.com/watch?v=dQw4w9WgXcQ o https://youtu.be/dQw4w9WgXcQ)">
+            <input type="text" id="youtube-url" placeholder="Pega un enlace de YouTube aquí">
             <button id="load-button">Sintonizar</button>
         </div>
     </div>
@@ -125,26 +125,43 @@
         const urlInput = document.getElementById('youtube-url');
         const loadButton = document.getElementById('load-button');
         const player = document.getElementById('youtube-player');
+        
+        // Carga el script de la API de YouTube Iframe Player
+        const tag = document.createElement('script');
+        tag.src = "https://youtu.be/LzlarZAtMYI?list=PLP7LlHfxfuM8pAs_N7JOEvBIcpgTDiHud3";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-        loadButton.addEventListener('click', () => {
-            const url = urlInput.value;
-            if (url) {
-                const videoId = extractVideoId(url);
-                if (videoId) {
-                    // La URL de incrustación correcta de YouTube
-                    const embedUrl = `http://googleusercontent.com/youtube.com/embed/${videoId}?autoplay=1`;
-                    player.src = embedUrl;
-                } else {
-                    alert("Por favor, ingresa un enlace de YouTube válido.");
+        let ytPlayer;
+
+        // Esta función se llama automáticamente cuando la API de YouTube está lista
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('youtube-player', {
+                events: {
+                    'onReady': onPlayerReady
                 }
-            } else {
-                alert("El campo del enlace no puede estar vacío.");
-            }
-        });
+            });
+        }
+        
+        function onPlayerReady(event) {
+            // El reproductor ya está listo, ahora podemos controlar el video
+            loadButton.addEventListener('click', () => {
+                const url = urlInput.value;
+                if (url) {
+                    const videoId = extractVideoId(url);
+                    if (videoId) {
+                        ytPlayer.loadVideoById(videoId);
+                    } else {
+                        alert("Por favor, ingresa un enlace de YouTube válido.");
+                    }
+                } else {
+                    alert("El campo del enlace no puede estar vacío.");
+                }
+            });
+        }
 
         function extractVideoId(url) {
             let videoId = null;
-            // Expresión regular mejorada para capturar IDs de varios formatos de YouTube
             const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
             const match = url.match(regex);
             if (match && match[1]) {
