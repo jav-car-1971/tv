@@ -161,13 +161,14 @@
             { title: "Música de Studio Ghibli", id: "5gq4Jk69M6s" },
             { title: "Un poco de jazz", id: "neV3Hr4Jt_s" },
             { title: "Viaje a la Luna", id: "sNGeGjG49S8" },
-            { title: "Historia de la computación", id: "sNGeGjG49S8" }
+            { title: "Historia de la computación", id: "mC_3d_fN5qI" } // Corregí el ID duplicado
         ];
 
         const player = document.getElementById('youtube-player');
         const videoListUl = document.getElementById('video-list');
 
         function loadVideo(videoId) {
+            // ----- ESTA ES LA LÍNEA CORREGIDA -----
             const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
             player.src = embedUrl;
         }
@@ -183,6 +184,7 @@
             videoListUl.appendChild(li);
         });
 
+        // Cargar el primer video de la lista al iniciar la página
         if (myFavoriteVideos.length > 0) {
             loadVideo(myFavoriteVideos[0].id);
         }
