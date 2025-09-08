@@ -112,31 +112,36 @@
     <div class="tv-container">
         <div class="tv-antenna"></div>
         <div class="tv-screen-border">
-            <iframe id="youtube-player" src="about:blank" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <div id="youtube-player"></div>
         </div>
 
         <div class="tv-controls">
             <input type="text" id="youtube-url" placeholder="Pega un enlace de YouTube aquí">
-            <button id="load-button">Sintonizar</button>
+            <button id="load-button" disabled>Sintonizar</button>
         </div>
     </div>
 
     <script>
         const urlInput = document.getElementById('youtube-url');
         const loadButton = document.getElementById('load-button');
-        const player = document.getElementById('youtube-player');
         
-        // Carga el script de la API de YouTube Iframe Player
+        let ytPlayer;
+
+        // Carga la API de YouTube Iframe Player de forma asíncrona
         const tag = document.createElement('script');
-        tag.src = "https://youtu.be/LzlarZAtMYI?list=PLP7LlHfxfuM8pAs_N7JOEvBIcpgTDiHud3";
+        tag.src = "https://www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        let ytPlayer;
 
         // Esta función se llama automáticamente cuando la API de YouTube está lista
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('youtube-player', {
+                height: '100%',
+                width: '100%',
+                videoId: 'dQw4w9WgXcQ', // Video por defecto
+                playerVars: {
+                    'controls': 1
+                },
                 events: {
                     'onReady': onPlayerReady
                 }
@@ -144,7 +149,10 @@
         }
         
         function onPlayerReady(event) {
-            // El reproductor ya está listo, ahora podemos controlar el video
+            // Habilita el botón una vez que el reproductor está listo
+            loadButton.disabled = false;
+            
+            // Añade el event listener al botón Sintonizar
             loadButton.addEventListener('click', () => {
                 const url = urlInput.value;
                 if (url) {
